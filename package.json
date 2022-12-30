@@ -1,0 +1,53 @@
+{
+  "name": "@ketch-sdk/ketch-logging",
+  "version": "0.0.0",
+  "description": "Ketch Logging interface",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "all": "npm run lint && npm run format-check && npm run test && npm run build && npm run docs",
+    "build": "ncc build --minify --license licenses.txt src/index.ts",
+    "format": "prettier --write \"**/*.{ts,tsx,yml,yaml}\"",
+    "format-check": "prettier --check '**/*.ts'",
+    "lint": "eslint src/**/*.ts",
+    "test": "jest --runInBand --passWithNoTests",
+    "docs": "typedoc --githubPages true --excludeInternal src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ketch-sdk/ketch-logging.git"
+  },
+  "homepage": "https://github.com/ketch-sdk/ketch-logging",
+  "bugs": {
+    "url": "https://github.com/ketch-sdk/ketch-logging/issues"
+  },
+  "keywords": [
+    "Ketch",
+    "logging"
+  ],
+  "author": "Ketch Kloud, Inc.",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.2.4",
+    "@types/node": "^18.11.17",
+    "@typescript-eslint/eslint-plugin": "^5.47.0",
+    "@typescript-eslint/parser": "^5.47.0",
+    "@vercel/ncc": "^0.36.0",
+    "eslint": "^8.30.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jest": "^27.1.7",
+    "eslint-plugin-prettier": "^4.2.1",
+    "jest": "^29.3.1",
+    "jest-environment-jsdom": "^29.3.1",
+    "jest-junit": "^15.0.0",
+    "js-yaml": "^4.1.0",
+    "prettier": "^2.8.1",
+    "ts-jest": "^29.0.3",
+    "typedoc": "^0.23.23",
+    "typescript": "^4.9.4"
+  },
+  "files": [
+    "dist/"
+  ]
+}
