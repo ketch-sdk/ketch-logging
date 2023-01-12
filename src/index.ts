@@ -1,4 +1,4 @@
-export enum LogLevel {
+export declare const enum LogLevel {
   TRACE = 'trace',
   DEBUG = 'debug',
   INFO = 'info',
@@ -18,9 +18,9 @@ const levelPriority: { [key: string]: number } = {
   [LogLevel.ERROR]: 5,
 }
 
-export type LoggerFunction = (...data: any[]) => void
+export declare type LoggerFunction = (...data: any[]) => void
 
-export interface Logger {
+export declare interface Logger {
   trace: LoggerFunction
   debug: LoggerFunction
   info: LoggerFunction
