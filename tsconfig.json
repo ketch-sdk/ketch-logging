@@ -9,7 +9,7 @@
     "forceConsistentCasingInFileNames": true,
     "inlineSourceMap": true,
     "module": "CommonJS",
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "noEmit": false,
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
