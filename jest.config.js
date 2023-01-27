@@ -123,7 +123,7 @@ module.exports = {
 
   // Options that will be passed to the testEnvironment
   testEnvironmentOptions: {
-    url: 'https://localhost.localdomain/index.html?swb_log=trace',
+    url: 'https://localhost.localdomain/index.html?ketch_log=trace',
   },
 
   // Adds a location field to test results

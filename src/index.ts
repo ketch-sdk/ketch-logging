@@ -50,16 +50,18 @@ export function getLogger(prefix: string, level: string | LogLevel = getLogLevel
   return loggers as any as Logger
 }
 
-export function getLogLevel(input: string = window.location.search, prefix = 'swb_'): LogLevel {
+export function getLogLevel(input: string = window.location.search, prefixes = ['ketch_', 'swb_']): LogLevel {
   const params = new URLSearchParams(input)
-  const debug = params.get(`${prefix}debug`)
-  const level = (params.get(`${prefix}log`) || '').toLowerCase()
+  for (const prefix of prefixes) {
+    if (params.has(`${prefix}log`)) {
+      const level = (params.get(`${prefix}log`) || '').toLowerCase()
 
-  if (level && levelPriority[level]) {
-    return level as LogLevel
-  }
-  if (debug) {
-    return LogLevel.DEBUG
+      if (level && levelPriority[level]) {
+        return level as LogLevel
+      }
+    } else if (params.has(`${prefix}debug`)) {
+      return LogLevel.DEBUG
+    }
   }
 
   return DEFAULT_LOG_LEVEL
