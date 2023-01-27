@@ -1,3 +1,10 @@
+import Params from './params'
+
+/**
+ * Log Level
+ *
+ * @enum
+ */
 export declare const enum LogLevel {
   TRACE = 'trace',
   DEBUG = 'debug',
@@ -7,8 +14,14 @@ export declare const enum LogLevel {
   ERROR = 'error',
 }
 
+/**
+ * Default logging level
+ */
 export const DEFAULT_LOG_LEVEL = LogLevel.WARN
 
+/**
+ * Log level priority
+ */
 const levelPriority: { [key: string]: number } = {
   [LogLevel.TRACE]: 1,
   [LogLevel.DEBUG]: 2,
@@ -18,8 +31,14 @@ const levelPriority: { [key: string]: number } = {
   [LogLevel.ERROR]: 5,
 }
 
+/**
+ * Logger function
+ */
 export declare type LoggerFunction = (...data: any[]) => void
 
+/**
+ * Logger interface
+ */
 export declare interface Logger {
   trace: LoggerFunction
   debug: LoggerFunction
@@ -29,9 +48,28 @@ export declare interface Logger {
   error: LoggerFunction
 }
 
+/**
+ * Logging Function that does nothing
+ */
 const noopLoggerFunction = () => {}
 
-export function getLogger(prefix: string, level: string | LogLevel = getLogLevel()): Logger {
+/**
+ * Returns Params object
+ *
+ * @param input Input parameters
+ * @param prefixes Array of prefixes for the parameters
+ */
+export function getParams(input: string = window.location.search, prefixes = ['ketch_', 'swb_']): Params {
+  return new Params(input, prefixes)
+}
+
+/**
+ * Returns a logger.
+ *
+ * @param prefix Prefix for log messages
+ * @param level Log level
+ */
+export function getLogger(prefix: string, level: string | LogLevel = getLogLevel(getParams())): Logger {
   const header = `[${prefix}]`
   const loggers: { [key: string]: LoggerFunction } = {}
 
@@ -50,15 +88,19 @@ export function getLogger(prefix: string, level: string | LogLevel = getLogLevel
   return loggers as any as Logger
 }
 
-export function getLogLevel(input: string = window.location.search, prefix = 'swb_'): LogLevel {
-  const params = new URLSearchParams(input)
-  const debug = params.get(`${prefix}debug`)
-  const level = (params.get(`${prefix}log`) || '').toLowerCase()
+/**
+ * Returns the log level
+ *
+ * @param params Parameters to inspect for the level specification
+ */
+export function getLogLevel(params: Params = getParams()): LogLevel {
+  if (params.has(`log`)) {
+    const level = (params.get(`log`) || '').toLowerCase()
 
-  if (level && levelPriority[level]) {
-    return level as LogLevel
-  }
-  if (debug) {
+    if (level && levelPriority[level]) {
+      return level as LogLevel
+    }
+  } else if (params.has(`debug`)) {
     return LogLevel.DEBUG
   }
 

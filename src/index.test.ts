@@ -1,26 +1,29 @@
-import { DEFAULT_LOG_LEVEL, getLogger, getLogLevel, Logger, LogLevel } from './index'
+import { DEFAULT_LOG_LEVEL, getLogger, getLogLevel, getParams, Logger, LogLevel } from './index'
 
 describe('getLogLevel', () => {
   it('returns trace', () => {
     expect(getLogLevel()).toEqual(LogLevel.TRACE)
   })
   it('returns value from query', () => {
-    expect(getLogLevel('swb_log=debug')).toEqual(LogLevel.DEBUG)
+    expect(getLogLevel(getParams('ketch_log=debug'))).toEqual(LogLevel.DEBUG)
   })
   it('supports a different prefix', () => {
-    expect(getLogLevel('ketch_log=debug', 'ketch_')).toEqual(LogLevel.DEBUG)
+    expect(getLogLevel(getParams('swb_log=debug', ['swb_']))).toEqual(LogLevel.DEBUG)
+  })
+  it('supports a prefix array', () => {
+    expect(getLogLevel(getParams('s_log=debug', ['swb_', 'ketch_', 's_']))).toEqual(LogLevel.DEBUG)
   })
   it('returns value from query ignoring case', () => {
-    expect(getLogLevel('swb_log=DeBuG')).toEqual(LogLevel.DEBUG)
+    expect(getLogLevel(getParams('ketch_log=DeBuG'))).toEqual(LogLevel.DEBUG)
   })
   it('returns default if unrecognized from query', () => {
-    expect(getLogLevel('swb_log=debugf')).toEqual(DEFAULT_LOG_LEVEL)
+    expect(getLogLevel(getParams('ketch_log=debugf'))).toEqual(DEFAULT_LOG_LEVEL)
   })
   it('returns debug if specified with 1 value', () => {
-    expect(getLogLevel('swb_debug=1')).toEqual(LogLevel.DEBUG)
+    expect(getLogLevel(getParams('ketch_debug=1'))).toEqual(LogLevel.DEBUG)
   })
   it('returns debug if specified with 0 value', () => {
-    expect(getLogLevel('swb_debug=0')).toEqual(LogLevel.DEBUG)
+    expect(getLogLevel(getParams('ketch_debug=0'))).toEqual(LogLevel.DEBUG)
   })
 })
 
@@ -36,7 +39,7 @@ function testLogger(log: Logger) {
 describe('getLogger', () => {
   it('returns a default logger', () => {
     const spy = jest.spyOn(global.console, 'log').mockImplementation(() => {})
-    testLogger(getLogger('defaultLogger')) // test configuration sets swb_log=trace
+    testLogger(getLogger('defaultLogger')) // test configuration sets ketch_log=trace
     expect(spy).toHaveBeenCalledTimes(6)
   })
 

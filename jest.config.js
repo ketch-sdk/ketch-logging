@@ -29,9 +29,9 @@ module.exports = {
   // An object that configures minimum threshold enforcement for coverage results
   coverageThreshold: {
     global: {
-      branches: 79,
-      functions: 79,
-      lines: 87,
+      branches: 93,
+      functions: 100,
+      lines: 100,
     },
   },
 
@@ -123,7 +123,7 @@ module.exports = {
 
   // Options that will be passed to the testEnvironment
   testEnvironmentOptions: {
-    url: 'https://localhost.localdomain/index.html?swb_log=trace',
+    url: 'https://localhost.localdomain/index.html?ketch_log=trace',
   },
 
   // Adds a location field to test results
