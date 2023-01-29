@@ -26,9 +26,9 @@ const levelPriority: { [key: string]: number } = {
   [LogLevel.TRACE]: 1,
   [LogLevel.DEBUG]: 2,
   [LogLevel.INFO]: 3,
-  [LogLevel.LOG]: 3,
   [LogLevel.WARN]: 4,
   [LogLevel.ERROR]: 5,
+  [LogLevel.LOG]: 6,
 }
 
 /**
@@ -64,28 +64,54 @@ export function getParams(input: string = window.location.search, prefixes = ['k
 }
 
 /**
+ * Wrap a logger with an additional prefix
+ *
+ * @param logger The logger to wrap
+ * @param prefix The prefix to add
+ */
+export function wrapLogger(logger: Logger, prefix: string): Logger {
+  const header = `[${prefix}]`
+
+  return {
+    trace: (...data: any[]) => {
+      logger.trace(header, ...data)
+    },
+    debug: (...data: any[]) => {
+      logger.debug(header, ...data)
+    },
+    info: (...data: any[]) => {
+      logger.info(header, ...data)
+    },
+    log: (...data: any[]) => {
+      logger.log(header, ...data)
+    },
+    warn: (...data: any[]) => {
+      logger.warn(header, ...data)
+    },
+    error: (...data: any[]) => {
+      logger.error(header, ...data)
+    },
+  }
+}
+
+/**
  * Returns a logger.
  *
  * @param prefix Prefix for log messages
  * @param level Log level
  */
 export function getLogger(prefix: string, level: string | LogLevel = getLogLevel(getParams())): Logger {
-  const header = `[${prefix}]`
-  const loggers: { [key: string]: LoggerFunction } = {}
+  const loggers: { [key: string]: LoggerFunction } = {
+    log: global.console.log,
+  }
 
   level = level.toString().toLowerCase() as LogLevel
 
   for (const l of Object.keys(levelPriority)) {
-    let loggerFunction = noopLoggerFunction
-    if (levelPriority[l] >= levelPriority[level]) {
-      loggerFunction = (...data: any[]) => {
-        console.log(header, ...data)
-      }
-    }
-    loggers[l] = loggerFunction
+    loggers[l] = l === 'log' || levelPriority[l] >= levelPriority[level] ? loggers.log : noopLoggerFunction
   }
 
-  return loggers as any as Logger
+  return wrapLogger(loggers as any as Logger, prefix)
 }
 
 /**
@@ -94,13 +120,14 @@ export function getLogger(prefix: string, level: string | LogLevel = getLogLevel
  * @param params Parameters to inspect for the level specification
  */
 export function getLogLevel(params: Params = getParams()): LogLevel {
-  if (params.has(`log`)) {
-    const level = (params.get(`log`) || '').toLowerCase()
+  const p = params.get('log')
+  if (p && p.length) {
+    const level = p.toLowerCase()
 
     if (level && levelPriority[level]) {
       return level as LogLevel
     }
-  } else if (params.has(`debug`)) {
+  } else if (params.has('debug')) {
     return LogLevel.DEBUG
   }
 
