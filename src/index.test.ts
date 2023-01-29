@@ -1,4 +1,13 @@
-import { DEFAULT_LOG_LEVEL, getLogger, getLogLevel, getParams, Logger, LogLevel } from './index'
+import { DEFAULT_LOG_LEVEL, getLogger, getLogLevel, getParams, Logger, LogLevel, wrapLogger } from './index'
+
+function testLogger(log: Logger) {
+  log.trace('traced')
+  log.debug('debugged')
+  log.info('infoed')
+  log.warn('warned')
+  log.error('errored')
+  log.log('logged')
+}
 
 describe('getLogLevel', () => {
   it('returns trace', () => {
@@ -27,55 +36,91 @@ describe('getLogLevel', () => {
   })
 })
 
-function testLogger(log: Logger) {
-  log.trace('traced')
-  log.debug('debugged')
-  log.info('infoed')
-  log.log('logged')
-  log.warn('warned')
-  log.error('errored')
-}
+describe('wrapLogger', () => {
+  it('includes the new prefix', () => {
+    const spy = jest.spyOn(global.console, 'log').mockImplementation(() => {})
+    const innerLogger = getLogger('first', LogLevel.LOG)
+    const logger = wrapLogger(innerLogger, 'second')
+    testLogger(logger)
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledWith('[first]', '[second]', 'logged')
+  })
+})
 
 describe('getLogger', () => {
   it('returns a default logger', () => {
     const spy = jest.spyOn(global.console, 'log').mockImplementation(() => {})
-    testLogger(getLogger('defaultLogger')) // test configuration sets ketch_log=trace
+    const log = getLogger('defaultLogger') // test configuration sets ketch_log=trace
+    testLogger(log)
     expect(spy).toHaveBeenCalledTimes(6)
+    expect(spy).toHaveBeenNthCalledWith(1, '[defaultLogger]', 'traced')
+    expect(spy).toHaveBeenNthCalledWith(2, '[defaultLogger]', 'debugged')
+    expect(spy).toHaveBeenNthCalledWith(3, '[defaultLogger]', 'infoed')
+    expect(spy).toHaveBeenNthCalledWith(4, '[defaultLogger]', 'warned')
+    expect(spy).toHaveBeenNthCalledWith(5, '[defaultLogger]', 'errored')
+    expect(spy).toHaveBeenNthCalledWith(6, '[defaultLogger]', 'logged')
   })
 
   it('returns a trace logger', () => {
     const spy = jest.spyOn(global.console, 'log').mockImplementation(() => {})
-    testLogger(getLogger('traceLogger', LogLevel.TRACE))
+    const log = getLogger('traceLogger', LogLevel.TRACE)
+    testLogger(log)
     expect(spy).toHaveBeenCalledTimes(6)
+    expect(spy).toHaveBeenNthCalledWith(1, '[traceLogger]', 'traced')
+    expect(spy).toHaveBeenNthCalledWith(2, '[traceLogger]', 'debugged')
+    expect(spy).toHaveBeenNthCalledWith(3, '[traceLogger]', 'infoed')
+    expect(spy).toHaveBeenNthCalledWith(4, '[traceLogger]', 'warned')
+    expect(spy).toHaveBeenNthCalledWith(5, '[traceLogger]', 'errored')
+    expect(spy).toHaveBeenNthCalledWith(6, '[traceLogger]', 'logged')
   })
 
   it('returns a debug logger', () => {
     const spy = jest.spyOn(global.console, 'log').mockImplementation(() => {})
-    testLogger(getLogger('debugLogger', LogLevel.DEBUG))
+    const log = getLogger('debugLogger', LogLevel.DEBUG)
+    testLogger(log)
     expect(spy).toHaveBeenCalledTimes(5)
+    expect(spy).toHaveBeenNthCalledWith(1, '[debugLogger]', 'debugged')
+    expect(spy).toHaveBeenNthCalledWith(2, '[debugLogger]', 'infoed')
+    expect(spy).toHaveBeenNthCalledWith(3, '[debugLogger]', 'warned')
+    expect(spy).toHaveBeenNthCalledWith(4, '[debugLogger]', 'errored')
+    expect(spy).toHaveBeenNthCalledWith(5, '[debugLogger]', 'logged')
   })
 
   it('returns an info logger', () => {
     const spy = jest.spyOn(global.console, 'log').mockImplementation(() => {})
-    testLogger(getLogger('infoLogger', LogLevel.INFO))
+    const log = getLogger('infoLogger', LogLevel.INFO)
+    testLogger(log)
     expect(spy).toHaveBeenCalledTimes(4)
-  })
-
-  it('returns a log logger', () => {
-    const spy = jest.spyOn(global.console, 'log').mockImplementation(() => {})
-    testLogger(getLogger('logLogger', LogLevel.LOG))
-    expect(spy).toHaveBeenCalledTimes(4)
+    expect(spy).toHaveBeenNthCalledWith(1, '[infoLogger]', 'infoed')
+    expect(spy).toHaveBeenNthCalledWith(2, '[infoLogger]', 'warned')
+    expect(spy).toHaveBeenNthCalledWith(3, '[infoLogger]', 'errored')
+    expect(spy).toHaveBeenNthCalledWith(4, '[infoLogger]', 'logged')
   })
 
   it('returns a warn logger', () => {
     const spy = jest.spyOn(global.console, 'log').mockImplementation(() => {})
-    testLogger(getLogger('warnLogger', LogLevel.WARN))
-    expect(spy).toHaveBeenCalledTimes(2)
+    const log = getLogger('warnLogger', LogLevel.WARN)
+    testLogger(log)
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy).toHaveBeenNthCalledWith(1, '[warnLogger]', 'warned')
+    expect(spy).toHaveBeenNthCalledWith(2, '[warnLogger]', 'errored')
+    expect(spy).toHaveBeenNthCalledWith(3, '[warnLogger]', 'logged')
   })
 
-  it('returns a error logger', () => {
+  it('returns an error logger', () => {
     const spy = jest.spyOn(global.console, 'log').mockImplementation(() => {})
-    testLogger(getLogger('errorLogger', LogLevel.ERROR))
+    const log = getLogger('errorLogger', LogLevel.ERROR)
+    testLogger(log)
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy).toHaveBeenNthCalledWith(1, '[errorLogger]', 'errored')
+    expect(spy).toHaveBeenNthCalledWith(2, '[errorLogger]', 'logged')
+  })
+
+  it('returns a log logger', () => {
+    const spy = jest.spyOn(global.console, 'log').mockImplementation(() => {})
+    const log = getLogger('logLogger', LogLevel.LOG)
+    testLogger(log)
     expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenNthCalledWith(1, '[logLogger]', 'logged')
   })
 })
