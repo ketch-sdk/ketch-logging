@@ -103,12 +103,14 @@ export function wrapLogger(logger: Logger, prefix: string): Logger {
 export function getLogger(prefix: string, level: string | LogLevel = getLogLevel(getParams())): Logger {
   const loggers: { [key: string]: LoggerFunction } = {
     log: global.console.log,
+    error: global.console.error
   }
 
   level = level.toString().toLowerCase() as LogLevel
 
   for (const l of Object.keys(levelPriority)) {
-    loggers[l] = l === 'log' || levelPriority[l] >= levelPriority[level] ? loggers.log : noopLoggerFunction
+    loggers[l] = l === 'log' || levelPriority[l] >= levelPriority[level] ?
+      (l === LogLevel.ERROR ? loggers.error : loggers.log): noopLoggerFunction
   }
 
   return wrapLogger(loggers as any as Logger, prefix)
