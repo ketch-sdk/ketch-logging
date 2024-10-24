@@ -28,7 +28,7 @@ jobs:
         id: version
         uses: conventional-actions/next-version@v1
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           always-auth: true
           registry-url: https://registry.npmjs.com/
