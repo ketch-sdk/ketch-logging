@@ -154,7 +154,6 @@ jobs:
           - [x] All new and existing tests passed.
           - [x] I have evaluated the security impact of this change, and [OWASP Secure Coding Practices](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/migrated_content#) have been observed.
           - [x] I have informed stakeholders of my changes." \
-            --assignee alexchavez1 \
             --head "chore/bump-ketch-logging-${VERSION}" \
             --base main
         env:
